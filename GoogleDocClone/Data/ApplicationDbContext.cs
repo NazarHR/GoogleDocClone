@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace GoogleDocClone.Data
 {
@@ -9,5 +10,6 @@ namespace GoogleDocClone.Data
             : base(options)
         {
         }
+        public DbSet<Models.Document> Documents { get; set; }
     }
 }

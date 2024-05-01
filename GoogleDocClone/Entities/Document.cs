@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GoogleDocClone.Entities
 {
-    public class DocumentDto
+    public class Document
     {
         public int Id { get; set; }
         public string Title { get; set; }

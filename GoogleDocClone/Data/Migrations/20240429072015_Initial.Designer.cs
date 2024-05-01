@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GoogleDocClone.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(DocumentsDbContext))]
     [Migration("20240429072015_Initial")]
     partial class Initial
     {

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<GoogleDocClone.Models.Document>
+﻿@using GoogleDocClone.Entities;
+@model IEnumerable<Document>
 
 @{
     ViewData["Title"] = "Index";
@@ -20,6 +21,6 @@
     <div class="d-flex justify-content-center align-items-center" style="width:150px; height: 200px; background-color:aliceblue; font-size:100px">
         <a style="text-decoration:none; color:black" asp-action="Create">+</a>
     </div>
-    <span style="font-weight:bold">Create Newt</span>
+    <span style="font-weight:bold">Create New</span>
 </divc>
 </div>

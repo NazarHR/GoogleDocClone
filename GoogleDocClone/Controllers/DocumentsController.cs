@@ -6,33 +6,34 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GoogleDocClone.Data;
-using GoogleDocClone.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using GoogleDocClone.Entities;
+using GoogleDocClone.Services;
 
 namespace GoogleDocClone.Controllers
 {
     [Authorize]
     public class DocumentsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDocumentsRepository _documentsRepository;
 
-        public DocumentsController(ApplicationDbContext context)
+        public DocumentsController(IDocumentsRepository documentsRepository)
         {
-            _context = context;
+            _documentsRepository = documentsRepository;
         }
 
         // GET: Documents
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Documents.Include(d => d.User);
-            return View(await applicationDbContext.ToListAsync());
+            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var documents = await _documentsRepository.GetUsersDocuments(userID);
+            return View(documents);
         }
 
         // GET: Documents/Create
         public IActionResult Create()
         {
-
             return View();
         }
 
@@ -41,12 +42,11 @@ namespace GoogleDocClone.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content,UserId")] Document document)
+        public async Task<IActionResult> CreateAsync([Bind("Id,Title,Content,UserId")] Document document)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(document);
-                await _context.SaveChangesAsync();
+                await _documentsRepository.AddDocument(document);
                 return RedirectToAction(nameof(Index));
             }
             return View(document);
@@ -60,7 +60,7 @@ namespace GoogleDocClone.Controllers
                 return NotFound();
             }
 
-            var document = await _context.Documents.FindAsync(id);
+            var document = await _documentsRepository.FindAsync(id);
             if (document == null)
             {
                 return NotFound();
@@ -88,12 +88,11 @@ namespace GoogleDocClone.Controllers
             {
                 try
                 {
-                    _context.Update(document);
-                    await _context.SaveChangesAsync();
+                    await _documentsRepository.UpdateDocumentAsync(document);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DocumentExists(document.Id))
+                    if (!_documentsRepository.DocumentExists(document.Id))
                     {
                         return NotFound();
                     }
@@ -104,7 +103,7 @@ namespace GoogleDocClone.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", document.UserId);
+            //ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", document.UserId);
             return View(document);
         }
 
@@ -115,10 +114,9 @@ namespace GoogleDocClone.Controllers
             {
                 return NotFound();
             }
+            
+            var document = await _documentsRepository.FindAsync(id);
 
-            var document = await _context.Documents
-                .Include(d => d.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
             if (document == null)
             {
                 return NotFound();
@@ -135,19 +133,9 @@ namespace GoogleDocClone.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var document = await _context.Documents.FindAsync(id);
-            if (document != null)
-            {
-                _context.Documents.Remove(document);
-            }
-
-            await _context.SaveChangesAsync();
+            var document = await _documentsRepository.FindAsync(id);
+            await _documentsRepository.DeleteDocumentAsync(document);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool DocumentExists(int id)
-        {
-            return _context.Documents.Any(e => e.Id == id);
         }
     }
 }

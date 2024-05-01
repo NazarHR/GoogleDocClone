@@ -1,0 +1,13 @@
+﻿using GoogleDocClone.Entities;
+namespace GoogleDocClone.Services
+{
+    public interface IDocumentsRepository
+    {
+        Task<IEnumerable<Document>> GetUsersDocuments(string userId);
+        Task AddDocument(Document document);
+        Task<Document?> FindAsync(int? id);
+        Task UpdateDocumentAsync(Document document);
+        bool DocumentExists(int id);
+        Task DeleteDocumentAsync(Document? document);
+    }
+}

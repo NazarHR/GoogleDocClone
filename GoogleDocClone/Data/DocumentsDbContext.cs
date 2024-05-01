@@ -4,12 +4,12 @@ using System.Reflection.Metadata;
 
 namespace GoogleDocClone.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class DocumentsDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public DocumentsDbContext(DbContextOptions<DocumentsDbContext> options)
             : base(options)
         {
         }
-        public DbSet<Models.Document> Documents { get; set; }
+        public DbSet<Entities.Document> Documents { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using GoogleDocClone.Data;
+using GoogleDocClone.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,12 +13,14 @@ namespace GoogleDocClone
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            
+            builder.Services.AddScoped<IDocumentsRepository, DocumentsRepository>();
+            builder.Services.AddDbContext<DocumentsDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<DocumentsDbContext>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
